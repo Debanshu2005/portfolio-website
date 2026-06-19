@@ -1,0 +1,50 @@
+{
+  "lastUpdated": "2026-06-19T00:00:00Z",
+  "experience": [
+    {
+      "role": "Embedded Systems Intern",
+      "company": "Self-directed / Open Source",
+      "duration": "2025 - Present",
+      "description": "Developing autonomous drone systems with ArduPilot and MAVLink. Building IoT solutions with ESP32 and STM32 microcontrollers. Contributing to open-source embedded tools."
+    },
+    {
+      "role": "VS Code Extension Developer",
+      "company": "Code Janitor (Open Source)",
+      "duration": "2025 - Present",
+      "description": "Built and maintain Code Janitor, a VS Code extension for autocorrect and syntax fixing across multiple programming languages. 1,500+ marketplace installs."
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.Tech Electronics & Instrumentation Engineering",
+      "institution": "Techno Main Salt Lake (MAKAUT, Kolkata)",
+      "year": "2024 - 2027",
+      "grade": "Department Rank 3"
+    }
+  ],
+  "certifications": [
+    {
+      "name": "Embedded Systems Fundamentals",
+      "issuer": "Coursera / University of Colorado Boulder",
+      "date": "2025",
+      "url": ""
+    }
+  ],
+  "achievements": [
+    {
+      "title": "Department Rank 3 - EIE, MAKAUT",
+      "description": "Ranked 3rd in the Electronics & Instrumentation Engineering department at Techno Main Salt Lake.",
+      "date": "2025"
+    },
+    {
+      "title": "Code Janitor - 1,500+ Installs",
+      "description": "VS Code extension for multi-language syntax autocorrect reached 1,500+ marketplace installs.",
+      "date": "2025"
+    },
+    {
+      "title": "Autonomous Quadcopter Build",
+      "description": "Designed and built an autonomous quadcopter with ArduPilot flight controller, GPS navigation, and telemetry systems.",
+      "date": "2025"
+    }
+  ]
+}
