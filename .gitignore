@@ -30,12 +30,26 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
+!.env.example
 
 # vercel
 .vercel
+.github/workflows/deploy.yml
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local AI/editor workspace memory
+AGENT.md
+AGENTS.md
+CLAUDE.md
+.agents/
+.codex/
+graphify-out/
+workspace.json
+workspace*.json
+workspacememory.*
+WORKSPACE_MEMORY.*
