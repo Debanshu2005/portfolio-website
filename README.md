@@ -27,7 +27,7 @@ npm run dev
 Open:
 
 ```text
-http://localhost:3000
+https://portfolio-website-ten-weld-98.vercel.app/
 ```
 
 The dev script uses webpack because Turbopack was hanging on this Windows scratch workspace.
