@@ -2,10 +2,10 @@
   "lastUpdated": "2026-06-19T00:00:00Z",
   "experience": [
     {
-      "role": "Embedded Systems Intern",
-      "company": "Self-directed / Open Source",
+      "role": "Embedded Systems Builder",
+      "company": "Self-directed Projects",
       "duration": "2025 - Present",
-      "description": "Developing autonomous drone systems with ArduPilot and MAVLink. Building IoT solutions with ESP32 and STM32 microcontrollers. Contributing to open-source embedded tools."
+      "description": "Building autonomous drone systems with ArduPilot and MAVLink, plus IoT prototypes with ESP32, STM32, sensors, and real-time hardware interfaces."
     },
     {
       "role": "VS Code Extension Developer",
