@@ -381,37 +381,52 @@ function HardwareBackdrop() {
 
   return (
     <div ref={backdropRef} className="hardware-backdrop" aria-hidden="true">
-      <svg className="hardware-traces" viewBox="0 0 1200 720">
-        <path d="M120 160 H360 V250 H520 V190 H820 V310 H1030" />
-        <path d="M160 520 H330 V420 H520 V500 H760 V390 H1040" />
-        <path d="M270 90 V610" />
-        <path d="M905 100 V620" />
-        <circle cx="360" cy="250" r="8" />
-        <circle cx="520" cy="190" r="8" />
-        <circle cx="760" cy="500" r="8" />
-        <circle cx="905" cy="390" r="8" />
+      <svg className="industrial-pipeline" viewBox="0 0 1200 720">
+        <path className="pipe pipe-primary" d="M40 612 H250 Q310 612 310 552 V428 Q310 368 370 368 H438" />
+        <path className="pipe pipe-primary" d="M762 184 H940 Q1000 184 1000 244 V552 Q1000 612 1060 612 H1170" />
+        <path className="pipe pipe-secondary" d="M130 118 H388 Q430 118 430 160 V252" />
+        <path className="pipe pipe-secondary" d="M746 606 H890 Q930 606 930 566 V462" />
+        <path className="pipe pipe-thin" d="M78 258 H214 Q254 258 254 298 V456" />
+        <path className="pipe pipe-thin" d="M1050 142 V260 Q1050 300 1090 300 H1164" />
+        <g className="pipe-joint" transform="translate(310 428)">
+          <circle r="19" />
+          <path d="M-12 0 H12 M0 -12 V12" />
+        </g>
+        <g className="pipe-joint" transform="translate(1000 552)">
+          <circle r="19" />
+          <path d="M-12 0 H12 M0 -12 V12" />
+        </g>
+        <g className="pipe-gauge" transform="translate(254 456)">
+          <circle r="25" />
+          <path d="M0 0 L14 -9" />
+          <path d="M-12 13 H12" />
+        </g>
+        <g className="pipe-gauge" transform="translate(930 462)">
+          <circle r="25" />
+          <path d="M0 0 L9 13" />
+          <path d="M-12 13 H12" />
+        </g>
+        <circle className="pipe-node" cx="430" cy="160" r="6" />
+        <circle className="pipe-node" cx="370" cy="368" r="6" />
+        <circle className="pipe-node" cx="1050" cy="260" r="6" />
       </svg>
       {hardwareImages.map((image) => (
-        <a
+        <div
           key={image.label}
-          href={image.source}
-          target="_blank"
-          rel="noopener noreferrer"
           className={`hardware-photo ${image.className}`}
-          aria-label={`${image.label} source image`}
         >
-            <Image
-              src={image.src}
-              alt={image.label}
-              fill
-              sizes="(max-width: 920px) 10rem, 15rem"
-              unoptimized
-            />
+          <Image
+            src={image.src}
+            alt={image.label}
+            fill
+            sizes="(max-width: 920px) 10rem, 15rem"
+            unoptimized
+          />
           <span>
             <strong>{image.label}</strong>
             <em>{image.note}</em>
           </span>
-        </a>
+        </div>
       ))}
     </div>
   );
@@ -787,7 +802,7 @@ export default function Home() {
       <section id="timeline" className="timeline-section">
         <SectionHeading
           eyebrow={`Last updated ${formatDate(linkedInData.lastUpdated)}`}
-          title="Scroll-driven build log"
+          title="Stay updated on my latest work"
           text="A story of academic signal, shipped projects, and hands-on systems work."
         />
         <div className="timeline-list">

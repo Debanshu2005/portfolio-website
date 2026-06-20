@@ -161,72 +161,121 @@ h3 {
   z-index: -2;
   pointer-events: none;
   perspective: 900px;
-  opacity: 0.8;
+  opacity: 0.72;
 }
 
-.hardware-traces {
+.industrial-pipeline {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   fill: none;
-  stroke: rgba(0, 212, 255, 0.22);
-  stroke-width: 2;
-  filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.22));
+  filter:
+    drop-shadow(0 0 12px rgba(0, 212, 255, 0.1))
+    drop-shadow(0 0 26px rgba(0, 255, 136, 0.06));
+  opacity: 0.62;
   transform: translate(calc(var(--board-x) * -0.35), calc(var(--board-y) * -0.35));
   transition: transform 0.2s ease-out;
 }
 
-.hardware-traces path {
-  stroke-dasharray: 16 12;
-  animation: trace-current 7s linear infinite;
+.pipe {
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.hardware-traces circle {
-  fill: rgba(0, 255, 136, 0.65);
-  stroke: none;
+.pipe-primary {
+  stroke: rgba(0, 212, 255, 0.14);
+  stroke-width: 12;
+}
+
+.pipe-secondary {
+  stroke: rgba(0, 255, 136, 0.1);
+  stroke-width: 8;
+}
+
+.pipe-thin {
+  stroke: rgba(255, 191, 71, 0.1);
+  stroke-width: 5;
+}
+
+.pipe-joint circle,
+.pipe-gauge circle {
+  fill: rgba(5, 10, 20, 0.5);
+  stroke: rgba(0, 212, 255, 0.2);
+  stroke-width: 2;
+}
+
+.pipe-joint path,
+.pipe-gauge path {
+  stroke: rgba(247, 251, 255, 0.26);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.pipe-node {
+  fill: rgba(0, 255, 136, 0.36);
+  stroke: rgba(5, 10, 20, 0.7);
+  stroke-width: 3;
 }
 
 .hardware-photo {
   position: absolute;
   display: block;
-  width: 15rem;
-  height: 10rem;
+  width: 17rem;
+  height: 11.2rem;
   overflow: hidden;
-  border: 1px solid rgba(247, 251, 255, 0.14);
-  background: rgba(5, 10, 20, 0.72);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 20px 60px rgba(0, 0, 0, 0.42),
-    0 0 34px rgba(0, 212, 255, 0.12);
-  pointer-events: auto;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0.42;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 28%, rgba(0, 0, 0, 0.72) 48%, transparent 74%);
+  mask-image: radial-gradient(ellipse at center, #000 28%, rgba(0, 0, 0, 0.72) 48%, transparent 74%);
   transform:
     translate(var(--board-x), var(--board-y))
     rotateX(var(--board-rotate-x))
     rotateY(var(--board-rotate-y));
   transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease,
     opacity 0.2s ease,
     transform 0.16s ease-out;
 }
 
+.hardware-photo::before,
 .hardware-photo::after {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(5, 10, 20, 0.08), rgba(5, 10, 20, 0.64)),
-    radial-gradient(circle at 22% 18%, rgba(0, 212, 255, 0.18), transparent 42%);
   pointer-events: none;
+}
+
+.hardware-photo::before {
+  z-index: 1;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(247, 251, 255, 0.06) 0 1px,
+      transparent 1px 7px
+    ),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.28), transparent 42%, rgba(0, 255, 136, 0.16));
+  mix-blend-mode: screen;
+  opacity: 0.62;
+}
+
+.hardware-photo::after {
+  z-index: 2;
+  background:
+    radial-gradient(ellipse at center, transparent 0%, rgba(5, 10, 20, 0.18) 40%, rgba(5, 10, 20, 0.92) 76%),
+    radial-gradient(circle at 24% 18%, rgba(0, 212, 255, 0.24), transparent 46%),
+    radial-gradient(circle at 78% 70%, rgba(0, 255, 136, 0.16), transparent 42%);
 }
 
 .hardware-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.74;
-  filter: saturate(1.18) contrast(1.06);
+  opacity: 0.5;
+  filter: grayscale(1) contrast(2.25) brightness(0.46) sepia(1) hue-rotate(140deg) saturate(5.2);
+  mix-blend-mode: screen;
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,
@@ -237,10 +286,11 @@ h3 {
   position: absolute;
   left: 0.85rem;
   right: 0.85rem;
-  bottom: 0.75rem;
-  z-index: 1;
+  bottom: 1.1rem;
+  z-index: 3;
   display: grid;
   gap: 0.1rem;
+  opacity: 0;
 }
 
 .hardware-photo strong {
@@ -258,24 +308,18 @@ h3 {
 
 .hardware-photo:hover,
 .hardware-photo:focus-visible {
-  border-color: rgba(0, 212, 255, 0.48);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 24px 70px rgba(0, 0, 0, 0.5),
-    0 0 48px rgba(0, 212, 255, 0.22);
   outline: none;
 }
 
 .hardware-photo:hover img,
 .hardware-photo:focus-visible img {
-  opacity: 0.9;
-  filter: saturate(1.28) contrast(1.1);
-  transform: scale(1.04);
+  opacity: 0.5;
+  filter: grayscale(1) contrast(2.25) brightness(0.46) sepia(1) hue-rotate(140deg) saturate(5.2);
 }
 
 .arduino-board {
-  left: 4%;
-  top: 22%;
+  left: 1%;
+  top: 24%;
   transform: translate(calc(var(--board-x) * -0.55), var(--board-y))
     rotateX(var(--board-rotate-x))
     rotateY(var(--board-rotate-y))
@@ -283,8 +327,8 @@ h3 {
 }
 
 .raspberry-board {
-  right: 4%;
-  top: 17%;
+  right: 2%;
+  top: 20%;
   transform: translate(var(--board-x), calc(var(--board-y) * -0.5))
     rotateX(var(--board-rotate-x))
     rotateY(var(--board-rotate-y))
@@ -292,10 +336,10 @@ h3 {
 }
 
 .sensor-board {
-  right: 12%;
-  bottom: 12%;
-  width: 13rem;
-  height: 9rem;
+  right: 8%;
+  bottom: 9%;
+  width: 15rem;
+  height: 10rem;
   transform: translate(calc(var(--board-x) * 0.65), var(--board-y))
     rotateX(var(--board-rotate-x))
     rotateY(var(--board-rotate-y))
@@ -1056,12 +1100,6 @@ h3 {
   }
   100% {
     opacity: 0.2;
-  }
-}
-
-@keyframes trace-current {
-  to {
-    stroke-dashoffset: -180;
   }
 }
 
