@@ -1,6 +1,12 @@
 # Debanshu Sarkar Portfolio
 
-Personal portfolio for Debanshu Sarkar, focused on embedded systems, autonomous drones, Raspberry Pi builds, open source projects, and developer tools.
+Personal portfolio for Debanshu Sarkar, focused on embedded systems, autonomous drones, Raspberry Pi builds, open source projects, developer tools, and collaboration-ready builds.
+
+Current hero signal:
+
+```text
+Open to Collaborate - 2026
+```
 
 ## Tech Stack
 
@@ -78,6 +84,8 @@ GITHUB_USERNAME=Debanshu2005
 A fine-grained read-only token for public repositories is enough. For a classic token, `public_repo` and `read:user` are enough for this site.
 
 ## Contact
+
+The contact form opens a Gmail draft addressed to Debanshu, with a `mailto:` fallback for browsers that block popups or do not use Gmail.
 
 Email shown on the website:
 

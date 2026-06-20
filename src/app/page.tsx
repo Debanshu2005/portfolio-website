@@ -711,7 +711,7 @@ export default function Home() {
         <div className="hero-content">
           <div className="status-badge">
             <span />
-            Open to Internships - 2026
+            Open to Collaborate - 2026
           </div>
           <p className="hero-eyebrow">Electronics and Instrumentation - Techno Main SaltLake</p>
           <h1>
