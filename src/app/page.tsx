@@ -142,6 +142,19 @@ const hardwareImages = [
   },
 ];
 
+const sectionReveal = {
+  hidden: { opacity: 0, y: 72, filter: "blur(10px)" },
+  visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+};
+
+const cardReveal = {
+  hidden: { opacity: 0, y: 34, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1 },
+};
+
+const revealViewport = { once: false, amount: 0.18 };
+const revealEase = [0.22, 1, 0.36, 1] as const;
+
 function GithubIcon({ size = 18 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -252,6 +265,101 @@ function CursorSystem() {
         <path d="M6 31 58 8 42 56 30 37 6 31Z" />
         <path d="M30 37 58 8 20 33" />
       </motion.svg>
+    </div>
+  );
+}
+
+function MobileSignalPlane() {
+  return (
+    <div className="mobile-plane-system" aria-hidden="true">
+      <span className="mobile-plane-trail" />
+      <svg className="mobile-paper-plane" viewBox="0 0 64 64">
+        <path d="M6 31 58 8 42 56 30 37 6 31Z" />
+        <path d="M30 37 58 8 20 33" />
+      </svg>
+    </div>
+  );
+}
+
+function ScrollProgressHud() {
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+
+    const updateProgress = () => {
+      const scrollable =
+        document.documentElement.scrollHeight - window.innerHeight;
+      const nextProgress =
+        scrollable <= 0 ? 100 : (window.scrollY / scrollable) * 100;
+
+      setProgress(Math.min(100, Math.max(0, Math.round(nextProgress))));
+    };
+
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updateProgress);
+    };
+
+    updateProgress();
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    resizeObserver.observe(document.body);
+
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
+  }, []);
+
+  const level = Math.max(1, Math.min(5, Math.ceil(progress / 20)));
+  const complete = progress >= 100;
+
+  return (
+    <div
+      className={`scroll-progress-hud ${complete ? "is-complete" : ""}`}
+      role="progressbar"
+      aria-label="Website explored"
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={progress}
+      style={{ "--progress": `${progress}%` } as CSSProperties}
+    >
+      <div className="scroll-progress-copy">
+        <span>Explored</span>
+        <strong>{progress}%</strong>
+      </div>
+      <div className="scroll-progress-track" aria-hidden="true">
+        <span className="scroll-progress-fill" />
+        <span className="scroll-progress-runner">
+          <span className="runner-head">
+            <span />
+          </span>
+          <span className="runner-body">DS</span>
+        </span>
+        {complete ? (
+          <span className="scroll-complete-burst">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <span
+                key={index}
+                style={{ "--burst-index": index } as CSSProperties}
+              />
+            ))}
+          </span>
+        ) : null}
+      </div>
+      <div className="scroll-progress-levels" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, index) => (
+          <span
+            key={index}
+            className={index < level ? "is-active" : ""}
+          />
+        ))}
+      </div>
     </div>
   );
 }
@@ -566,6 +674,8 @@ export default function Home() {
   return (
     <main className="site-shell">
       <CursorSystem />
+      <MobileSignalPlane />
+      <ScrollProgressHud />
 
       <nav className="site-nav" aria-label="Primary navigation">
         <a href="#top" className="brand-mark">
@@ -625,14 +735,29 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="about" className="about-section">
+      <motion.section
+        id="about"
+        className="about-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
         <SectionHeading
           eyebrow="Inside the signal"
           title="I turn circuits into useful systems"
           text="I am Debanshu Sarkar, an Electronics and Instrumentation student at Techno Main SaltLake who likes building embedded prototypes, autonomous machines, and practical developer tools."
         />
         <div className="about-panels">
-          <article className="about-panel human-panel">
+          <motion.article
+            className="about-panel human-panel"
+            variants={cardReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={revealViewport}
+            transition={{ duration: 0.55, ease: revealEase }}
+          >
             <span className="panel-number">01</span>
             <h3>The Human</h3>
             <p>I build things that move, think, and respond to the real world.</p>
@@ -640,8 +765,15 @@ export default function Home() {
               <MapPin size={16} />
               22.5726 N / 88.3639 E
             </div>
-          </article>
-          <article className="about-panel circuit-panel">
+          </motion.article>
+          <motion.article
+            className="about-panel circuit-panel"
+            variants={cardReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={revealViewport}
+            transition={{ duration: 0.55, delay: 0.08, ease: revealEase }}
+          >
             <span className="panel-number">02</span>
             <h3>The Stack</h3>
             <div className="circuit-board" aria-label="Circuit board skill map">
@@ -649,18 +781,33 @@ export default function Home() {
                 <span key={node}>{node}</span>
               ))}
             </div>
-          </article>
-          <article className="about-panel numbers-panel">
+          </motion.article>
+          <motion.article
+            className="about-panel numbers-panel"
+            variants={cardReveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={revealViewport}
+            transition={{ duration: 0.55, delay: 0.16, ease: revealEase }}
+          >
             <span className="panel-number">03</span>
             <h3>The Numbers</h3>
             <strong>B.Tech EIE - 2027</strong>
             <strong>Rank #3 / Dept</strong>
             <strong>Code Janitor - 1,534+ installs</strong>
-          </article>
+          </motion.article>
         </div>
-      </section>
+      </motion.section>
 
-      <section id="projects" className="projects-section">
+      <motion.section
+        id="projects"
+        className="projects-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
         <SectionHeading
           eyebrow="3D project deck"
           title="Work with a physical-world bias"
@@ -747,9 +894,17 @@ export default function Home() {
             );
           })}
         </div>
-      </section>
+      </motion.section>
 
-      <section id="skills" className="skills-section">
+      <motion.section
+        id="skills"
+        className="skills-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
         <SectionHeading
           eyebrow="Skill nebula"
           title="A galaxy of things I actually wire together"
@@ -797,9 +952,17 @@ export default function Home() {
             )}
           </aside>
         </div>
-      </section>
+      </motion.section>
 
-      <section id="timeline" className="timeline-section">
+      <motion.section
+        id="timeline"
+        className="timeline-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
         <SectionHeading
           eyebrow={`Last updated ${formatDate(linkedInData.lastUpdated)}`}
           title="Stay updated on my latest work"
@@ -809,20 +972,39 @@ export default function Home() {
           {timelineItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <article key={`${item.title}-${index}`} className="timeline-item">
+              <motion.article
+                key={`${item.title}-${index}`}
+                className="timeline-item"
+                variants={cardReveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: false, amount: 0.28 }}
+                transition={{
+                  duration: 0.5,
+                  delay: Math.min(index * 0.04, 0.22),
+                  ease: revealEase,
+                }}
+              >
                 <div className="timeline-icon">
                   <Icon size={18} />
                 </div>
                 <span>{item.date}</span>
                 <h3>{item.title}</h3>
                 <p>{item.text}</p>
-              </article>
+              </motion.article>
             );
           })}
         </div>
-      </section>
+      </motion.section>
 
-      <section className="activity-section">
+      <motion.section
+        className="activity-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
         <SectionHeading
           eyebrow="GitHub live activity"
           title="Signals from the workbench"
@@ -849,9 +1031,17 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      <section id="contact" className="contact-section">
+      <motion.section
+        id="contact"
+        className="contact-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
         <div>
           <span className="section-kicker">Coordinates locked</span>
           <h2>LET&apos;S BUILD SOMETHING.</h2>
@@ -932,7 +1122,7 @@ export default function Home() {
             </a>
           </div>
         </form>
-      </section>
+      </motion.section>
     </main>
   );
 }
