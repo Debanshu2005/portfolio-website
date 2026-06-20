@@ -26,6 +26,7 @@ import type {
 import linkedInData from "../../data/linkedin.json";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const contactEmail = "debanshu.sarkar2005@gmail.com";
 
 const roles = [
   "Embedded Systems Builder",
@@ -666,9 +667,22 @@ export default function Home() {
       .filter(Boolean)
       .join("\n");
 
-    window.location.href = `mailto:debanshu.sarkar2005@gmail.com?subject=${encodeURIComponent(
+    const gmailParams = new URLSearchParams({
+      view: "cm",
+      fs: "1",
+      to: contactEmail,
+      su: subject,
+      body,
+    });
+    const gmailUrl = `https://mail.google.com/mail/?${gmailParams.toString()}`;
+    const mailtoUrl = `mailto:${contactEmail}?subject=${encodeURIComponent(
       subject
     )}&body=${encodeURIComponent(body)}`;
+    const draftWindow = window.open(gmailUrl, "_blank", "noopener,noreferrer");
+
+    if (!draftWindow) {
+      window.location.href = mailtoUrl;
+    }
   };
 
   return (
@@ -1051,9 +1065,9 @@ export default function Home() {
               <MapPin size={16} />
               22.5726 N, 88.3639 E
             </span>
-            <a href="mailto:debanshu.sarkar2005@gmail.com">
+            <a href={`mailto:${contactEmail}`}>
               <Mail size={16} />
-              debanshu.sarkar2005@gmail.com
+              {contactEmail}
             </a>
           </div>
         </div>
