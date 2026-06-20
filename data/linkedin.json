@@ -17,7 +17,7 @@
   "education": [
     {
       "degree": "B.Tech Electronics & Instrumentation Engineering",
-      "institution": "Techno Main Salt Lake (MAKAUT, Kolkata)",
+      "institution": "Techno Main SaltLake",
       "year": "2023 - 2027",
       "grade": "Department Rank 3"
     }
@@ -32,8 +32,8 @@
   ],
   "achievements": [
     {
-      "title": "Department Rank 3 - EIE, MAKAUT",
-      "description": "Ranked 3rd in the Electronics & Instrumentation Engineering department at Techno Main Salt Lake.",
+      "title": "Department Rank 3 - EIE",
+      "description": "Ranked 3rd in the Electronics & Instrumentation Engineering department at Techno Main SaltLake.",
       "date": "2025"
     },
     {

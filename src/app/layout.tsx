@@ -79,7 +79,7 @@ export default function RootLayout({
     },
     alumniOf: {
       "@type": "CollegeOrUniversity",
-      name: "Techno Main Salt Lake (MAKAUT)",
+              name: "Techno Main SaltLake",
     },
   };
 

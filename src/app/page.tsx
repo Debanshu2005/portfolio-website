@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, FormEvent } from "react";
 import useSWR from "swr";
 import {
   ArrowLeft,
@@ -333,6 +333,59 @@ function ParticleField() {
   return <canvas ref={canvasRef} className="particle-field" aria-hidden="true" />;
 }
 
+function HardwareBackdrop() {
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = backdropRef.current;
+    if (!element) return;
+
+    const onMove = (event: PointerEvent) => {
+      const rect = element.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / Math.max(rect.width, 1) - 0.5;
+      const y = (event.clientY - rect.top) / Math.max(rect.height, 1) - 0.5;
+      element.style.setProperty("--board-x", `${x * 18}px`);
+      element.style.setProperty("--board-y", `${y * 18}px`);
+      element.style.setProperty("--board-rotate-x", `${y * -5}deg`);
+      element.style.setProperty("--board-rotate-y", `${x * 5}deg`);
+    };
+
+    window.addEventListener("pointermove", onMove);
+    return () => window.removeEventListener("pointermove", onMove);
+  }, []);
+
+  return (
+    <div ref={backdropRef} className="hardware-backdrop" aria-hidden="true">
+      <svg className="hardware-traces" viewBox="0 0 1200 720">
+        <path d="M120 160 H360 V250 H520 V190 H820 V310 H1030" />
+        <path d="M160 520 H330 V420 H520 V500 H760 V390 H1040" />
+        <path d="M270 90 V610" />
+        <path d="M905 100 V620" />
+        <circle cx="360" cy="250" r="8" />
+        <circle cx="520" cy="190" r="8" />
+        <circle cx="760" cy="500" r="8" />
+        <circle cx="905" cy="390" r="8" />
+      </svg>
+      <div className="hardware-board arduino-board">
+        <span className="board-label">ARDUINO</span>
+        <i className="chip" />
+        <span className="pin-row top" />
+        <span className="pin-row bottom" />
+      </div>
+      <div className="hardware-board raspberry-board">
+        <span className="board-label">RASPBERRY PI</span>
+        <i className="chip" />
+        <span className="gpio-grid" />
+      </div>
+      <div className="hardware-board sensor-board">
+        <span className="board-label">SENSOR BUS</span>
+        <i className="chip" />
+        <span className="signal-dot" />
+      </div>
+    </div>
+  );
+}
+
 function StatPill({ value, label }: { value: string | number; label: string }) {
   return (
     <div className="stat-pill">
@@ -375,6 +428,11 @@ function formatDate(dateString: string) {
 export default function Home() {
   const typedRole = useTypewriter(roles);
   const [activeProject, setActiveProject] = useState(0);
+  const [contactForm, setContactForm] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
 
   const { data: statsData } = useSWR<{ data: GitHubStats }>(
     "/api/github?type=stats",
@@ -442,6 +500,23 @@ export default function Home() {
     []
   );
 
+  const handleMailSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const subject = `Portfolio message from ${contactForm.name || "someone"}`;
+    const body = [
+      contactForm.message,
+      "",
+      contactForm.name ? `Name: ${contactForm.name}` : "",
+      contactForm.email ? `Reply email: ${contactForm.email}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    window.location.href = `mailto:debanshu.sarkar2005@gmail.com?subject=${encodeURIComponent(
+      subject
+    )}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <main className="site-shell">
       <CursorSystem />
@@ -461,13 +536,14 @@ export default function Home() {
 
       <section id="top" className="hero-section">
         <ParticleField />
+        <HardwareBackdrop />
         <div className="hero-vignette" />
         <div className="hero-content">
           <div className="status-badge">
             <span />
             Open to Internships - 2026
           </div>
-          <p className="hero-eyebrow">Electronics and Instrumentation - MAKAUT Kolkata</p>
+          <p className="hero-eyebrow">Electronics and Instrumentation - Techno Main SaltLake</p>
           <h1>
             <span>Debanshu</span>
             <span>Sarkar</span>
@@ -506,8 +582,8 @@ export default function Home() {
       <section id="about" className="about-section">
         <SectionHeading
           eyebrow="Inside the signal"
-          title="Not a PDF in a browser"
-          text="A fast read on the human, the stack, and the academic signal behind the work."
+          title="I turn circuits into useful systems"
+          text="I am Debanshu Sarkar, an Electronics and Instrumentation student at Techno Main SaltLake who likes building embedded prototypes, autonomous machines, and practical developer tools."
         />
         <div className="about-panels">
           <article className="about-panel human-panel">
@@ -745,22 +821,55 @@ export default function Home() {
             </a>
           </div>
         </div>
-        <form className="contact-form">
+        <form className="contact-form" onSubmit={handleMailSubmit}>
           <label>
             Name
-            <input type="text" name="name" placeholder="Your name" />
+            <input
+              type="text"
+              name="name"
+              placeholder="Your name"
+              value={contactForm.name}
+              onChange={(event) =>
+                setContactForm((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
+              }
+            />
           </label>
           <label>
             Email
-            <input type="email" name="email" placeholder="you@example.com" />
+            <input
+              type="email"
+              name="email"
+              placeholder="you@example.com"
+              value={contactForm.email}
+              onChange={(event) =>
+                setContactForm((current) => ({
+                  ...current,
+                  email: event.target.value,
+                }))
+              }
+            />
           </label>
           <label>
             Message
-            <textarea name="message" rows={4} placeholder="Tell me what we are building" />
+            <textarea
+              name="message"
+              rows={4}
+              placeholder="Tell me what we are building"
+              value={contactForm.message}
+              onChange={(event) =>
+                setContactForm((current) => ({
+                  ...current,
+                  message: event.target.value,
+                }))
+              }
+            />
           </label>
-          <button type="button">
+          <button type="submit">
             <Send size={16} />
-            Send Signal
+            Open Mail Draft
           </button>
           <div className="social-links">
             <a href="https://github.com/Debanshu2005" target="_blank" rel="noopener noreferrer">
