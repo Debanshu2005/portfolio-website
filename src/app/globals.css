@@ -1024,6 +1024,7 @@ h3 {
   background: rgba(5, 10, 20, 0.76);
   color: var(--color-cyan);
   animation: nebula-drift var(--drift) ease-in-out infinite alternate;
+  will-change: transform;
 }
 
 .skill-node span {
@@ -1341,12 +1342,10 @@ h3 {
 
 @keyframes nebula-drift {
   from {
-    margin-left: -0.3rem;
-    margin-top: -0.25rem;
+    transform: translate(calc(-50% - 0.3rem), calc(-50% - 0.25rem));
   }
   to {
-    margin-left: 0.35rem;
-    margin-top: 0.35rem;
+    transform: translate(calc(-50% + 0.35rem), calc(-50% + 0.35rem));
   }
 }
 

@@ -143,9 +143,13 @@ const hardwareImages = [
   },
 ];
 
+const PARTICLE_COUNT = 96;
+const REDUCED_PARTICLE_COUNT = 36;
+const PARTICLE_LINK_DISTANCE = 92;
+
 const sectionReveal = {
-  hidden: { opacity: 0, y: 72, filter: "blur(10px)" },
-  visible: { opacity: 1, y: 0, filter: "blur(0px)" },
+  hidden: { opacity: 0, y: 48 },
+  visible: { opacity: 1, y: 0 },
 };
 
 const cardReveal = {
@@ -153,7 +157,7 @@ const cardReveal = {
   visible: { opacity: 1, y: 0, scale: 1 },
 };
 
-const revealViewport = { once: false, amount: 0.18 };
+const revealViewport = { once: true, amount: 0.18 };
 const revealEase = [0.22, 1, 0.36, 1] as const;
 
 function GithubIcon({ size = 18 }: { size?: number }) {
@@ -215,9 +219,9 @@ function CursorSystem() {
   const ringY = useSpring(cursorY, { stiffness: 300, damping: 28 });
   const planeX = useSpring(cursorX, { stiffness: 80, damping: 20 });
   const planeY = useSpring(cursorY, { stiffness: 80, damping: 20 });
+  const planeRotate = useMotionValue(-20);
   const [active, setActive] = useState(false);
   const [textMode, setTextMode] = useState(false);
-  const [angle, setAngle] = useState(-20);
   const last = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -227,7 +231,7 @@ function CursorSystem() {
       const dx = event.clientX - last.current.x;
       const dy = event.clientY - last.current.y;
       if (Math.abs(dx) + Math.abs(dy) > 2) {
-        setAngle((Math.atan2(dy, dx) * 180) / Math.PI);
+        planeRotate.set((Math.atan2(dy, dx) * 180) / Math.PI);
       }
       last.current = { x: event.clientX, y: event.clientY };
     };
@@ -246,7 +250,7 @@ function CursorSystem() {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerover", onOver);
     };
-  }, [cursorX, cursorY]);
+  }, [cursorX, cursorY, planeRotate]);
 
   return (
     <div className="cursor-system" aria-hidden="true">
@@ -260,7 +264,7 @@ function CursorSystem() {
       />
       <motion.svg
         className="paper-plane"
-        style={{ x: planeX, y: planeY, rotate: angle }}
+        style={{ x: planeX, y: planeY, rotate: planeRotate }}
         viewBox="0 0 64 64"
       >
         <path d="M6 31 58 8 42 56 30 37 6 31Z" />
@@ -377,7 +381,7 @@ function ParticleField() {
     if (!context) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const particles = Array.from({ length: reduced ? 70 : 160 }, () => ({
+    const particles = Array.from({ length: reduced ? REDUCED_PARTICLE_COUNT : PARTICLE_COUNT }, () => ({
       x: Math.random(),
       y: Math.random(),
       vx: (Math.random() - 0.5) * 0.18,
@@ -389,7 +393,7 @@ function ParticleField() {
     let frame = 0;
 
     const resize = () => {
-      const ratio = window.devicePixelRatio || 1;
+      const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
       const rect = canvas.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
@@ -402,7 +406,10 @@ function ParticleField() {
       context.clearRect(0, 0, width, height);
       context.fillStyle = "rgba(255,255,255,0.72)";
 
-      const points = particles.map((particle) => {
+      const grid = new Map<string, number[]>();
+      const cellSize = PARTICLE_LINK_DISTANCE;
+
+      particles.forEach((particle, index) => {
         const px = particle.x * width;
         const py = particle.y * height;
         const dx = px - mouse.current.x;
@@ -427,22 +434,51 @@ function ParticleField() {
         context.beginPath();
         context.arc(px, py, 1.3, 0, Math.PI * 2);
         context.fill();
-        return { x: px, y: py };
+
+        const cellX = Math.floor(px / cellSize);
+        const cellY = Math.floor(py / cellSize);
+        const cellKey = `${cellX},${cellY}`;
+        const existing = grid.get(cellKey);
+        if (existing) {
+          existing.push(index);
+        } else {
+          grid.set(cellKey, [index]);
+        }
       });
 
-      for (let i = 0; i < points.length; i++) {
-        for (let j = i + 1; j < points.length; j++) {
-          const distance = Math.hypot(points[i].x - points[j].x, points[i].y - points[j].y);
-          if (distance < 92) {
-            context.strokeStyle = `rgba(0, 212, 255, ${0.18 * (1 - distance / 92)})`;
-            context.lineWidth = 1;
-            context.beginPath();
-            context.moveTo(points[i].x, points[i].y);
-            context.lineTo(points[j].x, points[j].y);
-            context.stroke();
+      particles.forEach((particle, index) => {
+        const px = particle.x * width;
+        const py = particle.y * height;
+        const cellX = Math.floor(px / cellSize);
+        const cellY = Math.floor(py / cellSize);
+
+        for (let offsetX = -1; offsetX <= 1; offsetX++) {
+          for (let offsetY = -1; offsetY <= 1; offsetY++) {
+            const neighbors = grid.get(`${cellX + offsetX},${cellY + offsetY}`);
+            if (!neighbors) continue;
+
+            for (const neighborIndex of neighbors) {
+              if (neighborIndex <= index) continue;
+
+              const neighbor = particles[neighborIndex];
+              const nx = neighbor.x * width;
+              const ny = neighbor.y * height;
+              const distance = Math.hypot(px - nx, py - ny);
+
+              if (distance < PARTICLE_LINK_DISTANCE) {
+                context.strokeStyle = `rgba(0, 212, 255, ${
+                  0.18 * (1 - distance / PARTICLE_LINK_DISTANCE)
+                })`;
+                context.lineWidth = 1;
+                context.beginPath();
+                context.moveTo(px, py);
+                context.lineTo(nx, ny);
+                context.stroke();
+              }
+            }
           }
         }
-      }
+      });
 
       if (!reduced) frame = window.requestAnimationFrame(draw);
     };
@@ -474,18 +510,38 @@ function HardwareBackdrop() {
     const element = backdropRef.current;
     if (!element) return;
 
-    const onMove = (event: PointerEvent) => {
-      const rect = element.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / Math.max(rect.width, 1) - 0.5;
-      const y = (event.clientY - rect.top) / Math.max(rect.height, 1) - 0.5;
+    let frame = 0;
+    let nextPointer: PointerEvent | null = null;
+    let rect = element.getBoundingClientRect();
+
+    const updateBackdrop = () => {
+      frame = 0;
+      if (!nextPointer) return;
+
+      const x = (nextPointer.clientX - rect.left) / Math.max(rect.width, 1) - 0.5;
+      const y = (nextPointer.clientY - rect.top) / Math.max(rect.height, 1) - 0.5;
       element.style.setProperty("--board-x", `${x * 18}px`);
       element.style.setProperty("--board-y", `${y * 18}px`);
       element.style.setProperty("--board-rotate-x", `${y * -5}deg`);
       element.style.setProperty("--board-rotate-y", `${x * 5}deg`);
     };
 
+    const onMove = (event: PointerEvent) => {
+      nextPointer = event;
+      if (!frame) frame = window.requestAnimationFrame(updateBackdrop);
+    };
+
+    const onResize = () => {
+      rect = element.getBoundingClientRect();
+    };
+
     window.addEventListener("pointermove", onMove);
-    return () => window.removeEventListener("pointermove", onMove);
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("resize", onResize);
+    };
   }, []);
 
   return (
@@ -992,7 +1048,7 @@ export default function Home() {
                 variants={cardReveal}
                 initial="hidden"
                 whileInView="visible"
-                viewport={{ once: false, amount: 0.28 }}
+                viewport={{ once: true, amount: 0.28 }}
                 transition={{
                   duration: 0.5,
                   delay: Math.min(index * 0.04, 0.22),
