@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, FormEvent } from "react";
+import Image from "next/image";
 import useSWR from "swr";
 import {
   ArrowLeft,
@@ -115,6 +116,30 @@ const skills = [
   { name: "FFT", domain: "signal", size: "small", context: "Frequency analysis" },
   { name: "OpenCV", domain: "vision", size: "medium", context: "Vision experiments" },
   { name: "YOLOv8", domain: "vision", size: "small", context: "Object detection" },
+];
+
+const hardwareImages = [
+  {
+    label: "Arduino Uno R3",
+    note: "microcontroller prototyping",
+    className: "arduino-board",
+    src: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Arduino_uno_r3.jpg?width=900",
+    source: "https://commons.wikimedia.org/wiki/File:Arduino_uno_r3.jpg",
+  },
+  {
+    label: "Raspberry Pi 4B",
+    note: "edge compute and physical AI",
+    className: "raspberry-board",
+    src: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Raspberry_Pi_4_Model_B_-_Top.jpg?width=900",
+    source: "https://commons.wikimedia.org/wiki/File:Raspberry_Pi_4_Model_B_-_Top.jpg",
+  },
+  {
+    label: "PLC / Control Panel",
+    note: "instrumentation and process control",
+    className: "sensor-board",
+    src: "https://commons.wikimedia.org/wiki/Special:Redirect/file/Plc_control_panel.JPG?width=900",
+    source: "https://commons.wikimedia.org/wiki/File:Plc_control_panel.JPG",
+  },
 ];
 
 function GithubIcon({ size = 18 }: { size?: number }) {
@@ -366,22 +391,28 @@ function HardwareBackdrop() {
         <circle cx="760" cy="500" r="8" />
         <circle cx="905" cy="390" r="8" />
       </svg>
-      <div className="hardware-board arduino-board">
-        <span className="board-label">ARDUINO</span>
-        <i className="chip" />
-        <span className="pin-row top" />
-        <span className="pin-row bottom" />
-      </div>
-      <div className="hardware-board raspberry-board">
-        <span className="board-label">RASPBERRY PI</span>
-        <i className="chip" />
-        <span className="gpio-grid" />
-      </div>
-      <div className="hardware-board sensor-board">
-        <span className="board-label">SENSOR BUS</span>
-        <i className="chip" />
-        <span className="signal-dot" />
-      </div>
+      {hardwareImages.map((image) => (
+        <a
+          key={image.label}
+          href={image.source}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`hardware-photo ${image.className}`}
+          aria-label={`${image.label} source image`}
+        >
+            <Image
+              src={image.src}
+              alt={image.label}
+              fill
+              sizes="(max-width: 920px) 10rem, 15rem"
+              unoptimized
+            />
+          <span>
+            <strong>{image.label}</strong>
+            <em>{image.note}</em>
+          </span>
+        </a>
+      ))}
     </div>
   );
 }
