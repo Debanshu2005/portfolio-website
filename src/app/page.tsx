@@ -773,8 +773,8 @@ export default function Home() {
             transition={{ duration: 0.55, ease: revealEase }}
           >
             <span className="panel-number">01</span>
-            <h3>The Human</h3>
-            <p>I build things that move, think, and respond to the real world.</p>
+            <h3>The Engineer</h3>
+            <p>From firmware to flight — I ship embedded systems, autonomous machines, and developer tools that solve real problems.</p>
             <div className="coordinates">
               <MapPin size={16} />
               22.5726 N / 88.3639 E
