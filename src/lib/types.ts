@@ -73,6 +73,22 @@ export interface GitHubStats {
   repoCount: number;
 }
 
+// Marketplace Types
+
+export interface MarketplaceStats {
+  displayName: string;
+  publisherName: string;
+  extensionName: string;
+  totalAcquisitions: number;
+  installs: number;
+  downloads: number;
+  updates: number;
+  rating: number;
+  ratingCount: number;
+  lastUpdated: string;
+  marketplaceUrl: string;
+}
+
 // ─── LinkedIn Types ───────────────────────────────────────────
 
 export interface Experience {

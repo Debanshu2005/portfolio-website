@@ -23,6 +23,7 @@ import type {
   GitHubRepo,
   GitHubStats,
   LanguageBreakdown,
+  MarketplaceStats,
 } from "@/lib/types";
 import { galleryPhotos } from "../../data/gallery";
 import linkedInData from "../../data/linkedin.json";
@@ -638,6 +639,14 @@ function formatDate(dateString: string) {
   }).format(new Date(dateString));
 }
 
+function formatStatNumber(value: number | undefined, fallback: string) {
+  if (typeof value !== "number") return fallback;
+  return new Intl.NumberFormat("en", {
+    notation: value >= 10000 ? "compact" : "standard",
+    maximumFractionDigits: value >= 10000 ? 1 : 0,
+  }).format(value);
+}
+
 export default function Home() {
   const typedRole = useTypewriter(roles);
   const [activeProject, setActiveProject] = useState(0);
@@ -670,11 +679,25 @@ export default function Home() {
     fetcher,
     { refreshInterval: 300000, revalidateOnFocus: false }
   );
+  const { data: marketplaceData } = useSWR<{ data: MarketplaceStats | null }>(
+    "/api/marketplace?extensionId=debanshu2005.code-janitor",
+    fetcher,
+    { refreshInterval: 3600000, revalidateOnFocus: false }
+  );
 
   const stats = statsData?.data;
   const repos = reposData?.data ?? [];
   const languages = languagesData?.data ?? [];
   const commits = commitsData?.data ?? [];
+  const marketplaceStats = marketplaceData?.data;
+  const marketplaceAcquisitions = formatStatNumber(
+    marketplaceStats?.totalAcquisitions,
+    "1,619"
+  );
+  const marketplaceInstalls = formatStatNumber(
+    marketplaceStats?.installs,
+    "235"
+  );
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -809,7 +832,7 @@ export default function Home() {
           </p>
           <div className="hero-stats">
             <StatPill value={projectBlueprints.length} label="Projects" />
-            <StatPill value="1,534+" label="VS Code installs" />
+            <StatPill value={marketplaceAcquisitions} label="VS Code acquisitions" />
             <StatPill value="#3" label="Dept. rank" />
             <StatPill value={stats?.repoCount ?? "--"} label="GitHub repos" />
           </div>
@@ -888,7 +911,8 @@ export default function Home() {
             <h3>The Numbers</h3>
             <strong>B.Tech EIE - 2027</strong>
             <strong>Rank #3 / Dept</strong>
-            <strong>Code Janitor - 1,534+ installs</strong>
+            <strong>Code Janitor - {marketplaceAcquisitions} acquisitions</strong>
+            <strong>{marketplaceInstalls} VS Code installs</strong>
           </motion.article>
         </div>
       </motion.section>
