@@ -700,6 +700,7 @@ h3 {
 
 .about-section,
 .projects-section,
+.gallery-section,
 .skills-section,
 .timeline-section,
 .activity-section,
@@ -744,6 +745,8 @@ h3 {
 
 .about-panel,
 .project-card,
+.gallery-card,
+.gallery-empty,
 .language-panel,
 .timeline-item,
 .terminal-log,
@@ -772,6 +775,8 @@ h3 {
 
 .about-panel::before,
 .project-card::before,
+.gallery-card::before,
+.gallery-empty::before,
 .language-panel::before,
 .timeline-item::before,
 .terminal-log::before,
@@ -795,6 +800,8 @@ h3 {
 
 .about-panel > *,
 .project-card > *,
+.gallery-card > *,
+.gallery-empty > *,
 .language-panel > *,
 .timeline-item > *,
 .terminal-log > *,
@@ -805,6 +812,8 @@ h3 {
 
 .about-panel:hover::before,
 .project-card.is-active::before,
+.gallery-card:hover::before,
+.gallery-empty:hover::before,
 .language-panel:hover::before,
 .timeline-item:hover::before,
 .terminal-log:hover::before,
@@ -985,6 +994,179 @@ h3 {
   gap: 0.5rem;
   margin-top: 1.25rem;
   color: var(--color-cyan);
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: minmax(12rem, 18vw);
+  gap: 1rem;
+}
+
+.gallery-card {
+  position: relative;
+  min-height: 18rem;
+  grid-column: span 2;
+  isolation: isolate;
+}
+
+.gallery-card.wide {
+  grid-column: span 3;
+}
+
+.gallery-card.tall {
+  grid-row: span 2;
+}
+
+.gallery-card.square {
+  aspect-ratio: 1;
+}
+
+.gallery-card-button {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  border: 0;
+  background:
+    linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(0, 255, 136, 0.05)),
+    #050a14;
+  color: inherit;
+  overflow: hidden;
+  padding: 0;
+  text-align: left;
+}
+
+.gallery-card img {
+  z-index: 0;
+  object-fit: contain;
+  filter: saturate(0.95) contrast(1.08);
+  transition:
+    filter 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.gallery-card-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(180deg, transparent 22%, rgba(5, 10, 20, 0.18) 48%, rgba(5, 10, 20, 0.92) 100%),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.16), transparent 42%, rgba(0, 255, 136, 0.1));
+  pointer-events: none;
+}
+
+.gallery-card:hover img {
+  filter: saturate(1.16) contrast(1.12);
+  opacity: 0.92;
+}
+
+.gallery-caption {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.4rem;
+  width: 100%;
+  padding: 1rem;
+}
+
+.gallery-caption span {
+  color: var(--color-green);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.gallery-caption strong {
+  color: var(--color-white);
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.gallery-caption-copy {
+  color: rgba(247, 251, 255, 0.72);
+  font-size: 0.88rem;
+}
+
+.gallery-caption em {
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.gallery-empty {
+  min-height: 14rem;
+  display: grid;
+  align-content: center;
+  gap: 0.6rem;
+  padding: 1.25rem;
+}
+
+.gallery-empty p {
+  color: var(--color-muted);
+}
+
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(2, 6, 12, 0.88);
+  backdrop-filter: blur(18px);
+}
+
+.gallery-lightbox-close {
+  position: fixed;
+  right: 1.25rem;
+  top: 1.25rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.85rem;
+  height: 2.85rem;
+  border: 1px solid rgba(0, 212, 255, 0.42);
+  background: rgba(5, 10, 20, 0.84);
+  color: var(--color-cyan);
+}
+
+.gallery-lightbox-frame {
+  display: grid;
+  gap: 0.85rem;
+  width: min(94vw, 1200px);
+  margin: 0;
+}
+
+.gallery-lightbox-image {
+  position: relative;
+  width: 100%;
+  height: min(78svh, 760px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #02060c;
+  box-shadow: 0 30px 110px rgba(0, 0, 0, 0.52);
+}
+
+.gallery-lightbox-image img {
+  object-fit: contain;
+}
+
+.gallery-lightbox-frame figcaption {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--color-muted);
+}
+
+.gallery-lightbox-frame strong {
+  color: var(--color-white);
+  font-family: var(--font-display);
+  font-size: 1.25rem;
 }
 
 .skills-layout {
@@ -1603,10 +1785,25 @@ h3 {
 
 @media (max-width: 920px) {
   .about-panels,
+  .gallery-grid,
   .skills-layout,
   .activity-grid,
   .contact-section {
     grid-template-columns: 1fr;
+  }
+
+  .gallery-grid {
+    grid-auto-rows: auto;
+  }
+
+  .gallery-card,
+  .gallery-card.wide,
+  .gallery-card.tall,
+  .gallery-card.square {
+    grid-column: auto;
+    grid-row: auto;
+    aspect-ratio: 4 / 3;
+    min-height: 17rem;
   }
 
   .language-panel {
@@ -1700,6 +1897,7 @@ h3 {
 
   .about-section,
   .projects-section,
+  .gallery-section,
   .skills-section,
   .timeline-section,
   .activity-section,

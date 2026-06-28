@@ -15,6 +15,7 @@ import {
   RadioTower,
   Send,
   Wrench,
+  X,
 } from "lucide-react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 import type {
@@ -23,6 +24,7 @@ import type {
   GitHubStats,
   LanguageBreakdown,
 } from "@/lib/types";
+import { galleryPhotos } from "../../data/gallery";
 import linkedInData from "../../data/linkedin.json";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -639,6 +641,9 @@ function formatDate(dateString: string) {
 export default function Home() {
   const typedRole = useTypewriter(roles);
   const [activeProject, setActiveProject] = useState(0);
+  const [selectedGalleryPhoto, setSelectedGalleryPhoto] = useState<
+    (typeof galleryPhotos)[number] | null
+  >(null);
   const [contactForm, setContactForm] = useState({
     name: "",
     email: "",
@@ -686,6 +691,24 @@ export default function Home() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, []);
+
+  useEffect(() => {
+    if (!selectedGalleryPhoto) return;
+
+    const previousOverflow = document.body.style.overflow;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedGalleryPhoto(null);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [selectedGalleryPhoto]);
 
   const timelineItems = useMemo(
     () => [
@@ -754,6 +777,7 @@ export default function Home() {
         <div className="nav-links">
           <a href="#about">About</a>
           <a href="#projects">Projects</a>
+          <a href="#gallery">Gallery</a>
           <a href="#skills">Skills</a>
           <a href="#timeline">Timeline</a>
           <a href="#contact">Contact</a>
@@ -965,6 +989,110 @@ export default function Home() {
           })}
         </div>
       </motion.section>
+
+      <motion.section
+        id="gallery"
+        className="gallery-section"
+        variants={sectionReveal}
+        initial="hidden"
+        whileInView="visible"
+        viewport={revealViewport}
+        transition={{ duration: 0.7, ease: revealEase }}
+      >
+        <SectionHeading
+          eyebrow="Photo gallery"
+          title="Snapshots from the workbench"
+          text="A visual log for build photos, event moments, lab setups, and anything worth remembering from the journey."
+        />
+        {galleryPhotos.length > 0 ? (
+          <div className="gallery-grid">
+            {galleryPhotos.map((photo, index) => (
+              <motion.article
+                key={`${photo.src}-${photo.title}`}
+                className={`gallery-card ${photo.orientation ?? "square"}`}
+                variants={cardReveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={revealViewport}
+                transition={{
+                  duration: 0.55,
+                  delay: Math.min(index * 0.05, 0.2),
+                  ease: revealEase,
+                }}
+                data-cursor
+              >
+                <button
+                  type="button"
+                  className="gallery-card-button"
+                  aria-label={`View full photo: ${photo.title}`}
+                  onClick={() => setSelectedGalleryPhoto(photo)}
+                >
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt ?? photo.title}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"
+                  />
+                  <span className="gallery-caption">
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{photo.title}</strong>
+                    {photo.caption ? (
+                      <span className="gallery-caption-copy">
+                        {photo.caption}
+                      </span>
+                    ) : null}
+                    <em>View full photo</em>
+                  </span>
+                </button>
+              </motion.article>
+            ))}
+          </div>
+        ) : (
+          <div className="gallery-empty">
+            <span className="panel-number">Gallery standby</span>
+            <p>Photos will appear here once the gallery data file has entries.</p>
+          </div>
+        )}
+      </motion.section>
+
+      {selectedGalleryPhoto ? (
+        <div
+          className="gallery-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Full photo: ${selectedGalleryPhoto.title}`}
+          onClick={() => setSelectedGalleryPhoto(null)}
+        >
+          <button
+            type="button"
+            className="gallery-lightbox-close"
+            aria-label="Close full photo"
+            onClick={() => setSelectedGalleryPhoto(null)}
+          >
+            <X size={20} />
+          </button>
+          <figure
+            className="gallery-lightbox-frame"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="gallery-lightbox-image">
+              <Image
+                src={selectedGalleryPhoto.src}
+                alt={selectedGalleryPhoto.alt ?? selectedGalleryPhoto.title}
+                fill
+                sizes="100vw"
+                priority
+              />
+            </div>
+            <figcaption>
+              <strong>{selectedGalleryPhoto.title}</strong>
+              {selectedGalleryPhoto.caption ? (
+                <span>{selectedGalleryPhoto.caption}</span>
+              ) : null}
+            </figcaption>
+          </figure>
+        </div>
+      ) : null}
 
       <motion.section
         id="skills"
