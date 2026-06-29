@@ -37,10 +37,10 @@ export const galleryPhotos: GalleryPhoto[] = [
     orientation: "wide",
   },
   {
-    title: "Me receiving 3rd postition medel",
+    title: "Me receiving 3rd postition medal",
     src: "/gallery/Prize.jpeg",
     alt: "At Freshers 2026",
-    caption: "Receiving 3rd position medel from our head of department",
+    caption: "Receiving 3rd position medal from our head of department",
     orientation: "wide",
   },
   {
@@ -51,7 +51,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     orientation: "wide",
   },
   {
-    title: "Me and my team in FEIM to attend Hacktonix",
+    title: "Me and my team in FIEM to attend Hacktonix",
     src: "/gallery/Hacktonix.jpeg",
     alt: "At FIEM for Hacktonix",
     caption: "Team Tech Savy at FIEM to attend Hacktonix",
